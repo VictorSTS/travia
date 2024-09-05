@@ -42,7 +42,6 @@ body {
             border: 1px solid #ccc;
             border-radius: 4px;
         }
-
         input[type="submit"] {
         background-color: #007BFF;
             color: white;
