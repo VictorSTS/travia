@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Formulaire PHP et tout</title>
+    <title>Formulaire de Voyage</title>
     <style>
 body {
     font-family: Arial, sans-serif;
@@ -64,16 +64,16 @@ body {
 <body>
 
 <div class="form-container">
-    <h2>Formulaire XAMPP</h2>
+    <h2>Voyage en Train</h2>
     <form action="process.php" method="POST">
         <div class="form-group">
-            <label for="depart">Valeur A :</label>
-            <input type="text" id="a" name="a" placeholder="Entrez la valeur A" required>
+            <label for="depart">Gare de départ:</label>
+            <input type="text" id="depart" name="depart" placeholder="Entrez la gare de départ" required>
         </div>
 
         <div class="form-group">
-            <label for="arrivee">Valeur B :</label>
-            <input type="text" id="b" name="b" placeholder="Entrez la valeur B" required>
+            <label for="arrivee">Gare d'arrivée:</label>
+            <input type="text" id="arrivee" name="arrivee" placeholder="Entrez la gare d'arrivée" required>
         </div>
 
         <input type="submit" value="Envoyer">
