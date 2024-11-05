@@ -108,10 +108,10 @@ $planetObjects = importPlanets($pdo);
 $i = 0;
 echo "<h1>Planètes importées :</h1>";
 foreach ($planetObjects as $planet) {
-    $i++;
+/*    $i++;
     if($i > 20){
-        break; // On affiche seulement 100 planètes
-    }
+        break; // On affiche seulement 20 planètes
+    }*/
     $planet->display();
 }
 
