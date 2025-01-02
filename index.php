@@ -69,13 +69,14 @@
 <nav class="navbar navbar-expand-lg navbar-dark bg-dark fixed-top">
     <a class="navbar-brand" href="#">Travia Tour</a>
     <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
-        <span class="navbar-toggler-icon"></span>
+        <span class="navbar-toggler-icon">
+        </span>
     </button>
-    <div class="collapse navbar-collapse" id="navbarNav">
-        <ul class="navbar-nav ml-auto">
-            <!-- Compte button removed -->
-        </ul>
-    </div>
+    <ul class="navbar-nav ml-auto">
+        <li class="nav-item">
+            <a class="nav-link" href="cart.php">Panier</a>
+        </li>
+    </ul>
     <button class="btn btn-link text-white" id="toggleFont">Traduire en Aurebesh</button>
 </nav>
 
@@ -100,22 +101,37 @@
     </form>
 
     <div id="map"></div>
-</div>
+    <div id="planetsContainer" class="row mt-4"></div>
 
 <div class="footer">
     <p>&copy; 2024 Travia Tour. Tous droits réservés.</p>
 </div>
 
 <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
 <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
-<script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <script>
     var map = L.map('map', {
         crs: L.CRS.Simple
     });
     var bounds = [[0,0], [1300,1300]];
     map.fitBounds(bounds);
+
+    var regionColors = {
+        "Colonies": "#FF0000",
+        "Core": "#00FF00",
+        "Deep Core": "#0000FF",
+        "Expansion Region": "#FFFF00",
+        "Extragalactic": "#FF00FF",
+        "Hutt Space": "#00FFFF",
+        "Inner Rim Territories": "#800000",
+        "Mid Rim Territories": "#808000",
+        "Outer Rim Territories": "#008080",
+        "Talcene Sector": "#800080",
+        "The Centrality": "#C0C0C0",
+        "Tingel Arm": "#FF8000",
+        "Wild Space": "#8000FF"
+    };
 
     $.get('getPlanets.php', function(data) {
         data.forEach(function(planet) {
@@ -124,12 +140,16 @@
             } else {
                 var radius = planet.diameter;
             }
+            var color = regionColors[planet.region] || '#FFFFFF';
             L.circle([planet.y*10, planet.x*10], {
-                color: 'white',
-                fillColor: 'white',
+                color: color,
+                fillColor: color,
                 fillOpacity: 0.5,
-                radius: planet.diameter / 200_000
-            }).addTo(map).bindPopup(planet.name);
+                radius: planet.diameter / 100_000
+            }).addTo(map).bindPopup(planet.name + " | Region: " + planet.region).on('click', function() {
+                $('#departure').val(planet.name);
+                $('#arrival').val('');
+            });
         });
 
     });
@@ -184,6 +204,7 @@
                 return;
             }
             if (data.success) {
+                console.log(data);
                 map.eachLayer(function (layer) {
                     if (layer instanceof L.Marker || layer instanceof L.Polyline) {
                         map.removeLayer(layer);
@@ -206,6 +227,38 @@
                     [data.departure.y*10, data.departure.x*10],
                     [data.arrival.y*10, data.arrival.x*10]
                 ]);
+                function calculateDistance(x1, y1, x2, y2) {
+                    return Math.sqrt(Math.pow(x2 - x1, 2) + Math.pow(y2 - y1, 2)).toFixed(2);
+                }
+
+                var distance = calculateDistance(data.departure.x, data.departure.y, data.arrival.x, data.arrival.y);
+
+                $('#planetsContainer').empty();
+
+                var departureImageUrl = 'https://static.wikia.nocookie.net/starwars/images/placeholder.png';
+
+                $('#planetsContainer').append(`
+                    <div class="col-md-6 text-center p-3" style="background-color: #1e1e1e; border-radius: 8px;">
+                        <h5>Planète de départ</h5>
+                        <img src="${departureImageUrl}" alt="${data.departure.name}" class="img-thumbnail mb-2" style="max-height: 150px;">
+                        <p><strong>${data.departure.name}</strong></p>
+                        <p>Coordonnées : (${data.departure.x}, ${data.departure.y})</p>
+                    </div>
+                `);
+
+
+                var arrivalImageUrl = 'https://static.wikia.nocookie.net/starwars/images/placeholder.png';
+                $('#planetsContainer').append(`
+                    <div class="col-md-6 text-center p-3" style="background-color: #2a2a2a; border-radius: 8px;">
+                        <h5>Planète d'arrivée</h5>
+                        <img src="${arrivalImageUrl}" alt="${data.arrival.name}" class="img-thumbnail mb-2" style="max-height: 150px;">
+                        <p><strong>${data.arrival.name}</strong></p>
+                        <p>Coordonnées : (${data.arrival.x}, ${data.arrival.y})</p>
+                        <p>Distance : ${distance}</p>
+                        <button class="btn btn-primary" onclick="window.location.href='cart.php?departure=${data.departure.name}&arrival=${data.arrival.name}'">Ajouter au panier</button>
+                    </div>
+                `);
+
             } else {
                 alert('No route found.');
             }
@@ -224,6 +277,5 @@
 
     $('head').append('<style>.aurebesh { font-family: "Aurebesh", sans-serif; }</style>');
 </script>
-<
 </body>
 </html>
