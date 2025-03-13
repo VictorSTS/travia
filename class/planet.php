@@ -348,7 +348,7 @@ class Planet
         $this->gravity = $gravity;
     }
 
-    // Méthode pour afficher les détails de la planète
+    // Method to display planet details
     public function display()
     {
         $imageURL = $this->getImageUrl();
@@ -357,17 +357,17 @@ class Planet
         if ($imageURL) {
             echo "<img src='{$imageURL}' alt='{$this->name}' style='width:200px;height:auto;'/>";
         }
-        echo "<p>Coordonnées : {$this->coord} (X: {$this->x}, Y: {$this->y})</p>";
-        echo "<p>Région : {$this->region}</p>";
-        echo "<p>Secteur : {$this->sector}</p>";
-        echo "<p>Soleils : {$this->suns}, Lunes : {$this->moons}</p>";
-        echo "<p>Position : {$this->position}, Distance : {$this->distance} années-lumière</p>";
-        echo "<p>Jour : {$this->lengthDay} heures, Année : {$this->lengthYear} jours</p>";
-        echo "<p>Diamètre : {$this->diameter} km, Gravité : {$this->gravity}</p>";
+        echo "<p>Coordinates: {$this->coord} (X: {$this->x}, Y: {$this->y})</p>";
+        echo "<p>Region: {$this->region}</p>";
+        echo "<p>Sector: {$this->sector}</p>";
+        echo "<p>Suns: {$this->suns}, Moons: {$this->moons}</p>";
+        echo "<p>Position: {$this->position}, Distance: {$this->distance} light-years</p>";
+        echo "<p>Day: {$this->lengthDay} hours, Year: {$this->lengthYear} days</p>";
+        echo "<p>Diameter: {$this->diameter} km, Gravity: {$this->gravity}</p>";
         echo "</div><hr>";
     }
 
-    // Méthode pour générer l'URL de l'image de la planète
+    // Method to generate the planet image URL
     private function getImageUrl()
     {
         if ($this->image) {
