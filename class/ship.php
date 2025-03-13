@@ -102,8 +102,8 @@ class Ship
         echo "<div>";
         echo "<h3>ID: {$this->id} - {$this->name}</h3>";
         echo "<p>Camp: {$this->camp}</p>";
-        echo "<p>Vitesse (km/h): {$this->speed_kmh}</p>";
-        echo "<p>Capacité: {$this->capacity}</p>";
+        echo "<p>Speed (km/h): {$this->speed_kmh}</p>";
+        echo "<p>Capacity: {$this->capacity}</p>";
         echo "</div><hr>";
     }
 }

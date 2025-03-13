@@ -1,1 +1,7 @@
 process.php
+vendor/
+composer.lock
+composer.json
+config/mail.json
+config/captcha.json
+logs/

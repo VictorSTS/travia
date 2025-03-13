@@ -1,3 +1,22 @@
+<?php
+// Start session
+session_start();
+
+// Check if user is logged in
+$isLoggedIn = isset($_SESSION['user_id']);
+
+// Initialize variables with default values
+$userName = '';
+$homePlanet = '';
+$workPlanet = '';
+
+// Only access session variables if user is logged in
+if ($isLoggedIn) {
+    $userName = isset($_SESSION['user_name']) ? $_SESSION['user_name'] : '';
+    $homePlanet = isset($_SESSION['home_planet']) ? $_SESSION['home_planet'] : '';
+    $workPlanet = isset($_SESSION['work_planet']) ? $_SESSION['work_planet'] : '';
+}
+?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -72,39 +91,73 @@
         <span class="navbar-toggler-icon">
         </span>
     </button>
-    <ul class="navbar-nav ml-auto">
-        <li class="nav-item">
-            <a class="nav-link" href="cart.php">Panier</a>
-        </li>
-    </ul>
-    <button class="btn btn-link text-white" id="toggleFont">Traduire en Aurebesh</button>
+    <div class="collapse navbar-collapse" id="navbarNav">
+        <ul class="navbar-nav ml-auto">
+            <li class="nav-item">
+                <a class="nav-link" href="cart.php">Cart</a>
+            </li>
+            <?php if ($isLoggedIn): ?>
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        <?php echo htmlspecialchars($userName); ?>
+                    </a>
+                    <div class="dropdown-menu dropdown-menu-right" aria-labelledby="userDropdown">
+                        <a class="dropdown-item" href="logout.php">Logout</a>
+                    </div>
+                </li>
+            <?php else: ?>
+                <li class="nav-item">
+                    <a class="nav-link" href="login.php">Login</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="register.php">Register</a>
+                </li>
+            <?php endif; ?>
+        </ul>
+    </div>
+    <button class="btn btn-link text-white" id="toggleFont">Translate to Aurebesh</button>
 </nav>
 
 <div class="container">
-    <h1 class="mt-5">Bienvenue sur Travia Tour</h1>
-    <p>Recherchez et réservez vos billets de vaisseaux de transport commerciaux intergalactiques.</p>
+    <h1 class="mt-5">Welcome to Travia Tour</h1>
+    <p>Search and book tickets for intergalactic commercial transport ships.</p>
+    
+    <?php if ($isLoggedIn): ?>
+        <div class="alert alert-info">
+            Hello <?php echo htmlspecialchars($userName); ?>! You can use your default planets to make your search easier.
+        </div>
+    <?php endif; ?>
 
     <form id="searchForm" class="mt-5">
         <div class="form-row">
             <div class="form-group col-md-6 position-relative">
-                <label for="departure">Planète de départ</label>
-                <input type="text" class="form-control" id="departure" name="departure" placeholder="Coruscant" required>
+                <label for="departure">Departure planet</label>
+                <input type="text" class="form-control" id="departure" name="departure" placeholder="Coruscant" value="<?php echo htmlspecialchars($homePlanet); ?>" required>
                 <ul class="autocomplete-dropdown" id="departureDropdown"></ul>
+                <?php if ($isLoggedIn): ?>
+                    <small class="form-text text-muted">Your home planet is pre-filled.</small>
+                <?php endif; ?>
             </div>
             <div class="form-group col-md-6 position-relative">
-                <label for="arrival">Planète d'arrivée</label>
-                <input type="text" class="form-control" id="arrival" name="arrival" placeholder="Tatooine" required>
+                <label for="arrival">Arrival planet</label>
+                <input type="text" class="form-control" id="arrival" name="arrival" placeholder="Tatooine" value="<?php echo htmlspecialchars($workPlanet); ?>" required>
                 <ul class="autocomplete-dropdown" id="arrivalDropdown"></ul>
+                <?php if ($isLoggedIn): ?>
+                    <small class="form-text text-muted">Your work planet is pre-filled.</small>
+                <?php endif; ?>
             </div>
         </div>
-        <button type="submit" class="btn btn-primary">Rechercher</button>
+        <button type="submit" class="btn btn-primary">Search</button>
+        <?php if ($isLoggedIn): ?>
+            <button type="button" id="swapPlanets" class="btn btn-secondary">Swap planets</button>
+        <?php endif; ?>
     </form>
 
     <div id="map"></div>
     <div id="planetsContainer" class="row mt-4"></div>
 
 <div class="footer">
-    <p>&copy; 2024 Travia Tour. Tous droits réservés.</p>
+    <p>&copy; 2024 Travia Tour. All rights reserved.</p>
 </div>
 
 <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
@@ -239,10 +292,10 @@
 
                 $('#planetsContainer').append(`
                     <div class="col-md-6 text-center p-3" style="background-color: #1e1e1e; border-radius: 8px;">
-                        <h5>Planète de départ</h5>
+                        <h5>Departure planet</h5>
                         <img src="${departureImageUrl}" alt="${data.departure.name}" class="img-thumbnail mb-2" style="max-height: 150px;">
                         <p><strong>${data.departure.name}</strong></p>
-                        <p>Coordonnées : (${data.departure.x}, ${data.departure.y})</p>
+                        <p>Coordinates: (${data.departure.x}, ${data.departure.y})</p>
                     </div>
                 `);
 
@@ -250,12 +303,12 @@
                 var arrivalImageUrl = 'https://static.wikia.nocookie.net/starwars/images/placeholder.png';
                 $('#planetsContainer').append(`
                     <div class="col-md-6 text-center p-3" style="background-color: #2a2a2a; border-radius: 8px;">
-                        <h5>Planète d'arrivée</h5>
+                        <h5>Arrival planet</h5>
                         <img src="${arrivalImageUrl}" alt="${data.arrival.name}" class="img-thumbnail mb-2" style="max-height: 150px;">
                         <p><strong>${data.arrival.name}</strong></p>
-                        <p>Coordonnées : (${data.arrival.x}, ${data.arrival.y})</p>
-                        <p>Distance : ${distance}</p>
-                        <button class="btn btn-primary" onclick="window.location.href='cart.php?departure=${data.departure.name}&arrival=${data.arrival.name}'">Ajouter au panier</button>
+                        <p>Coordinates: (${data.arrival.x}, ${data.arrival.y})</p>
+                        <p>Distance: ${distance}</p>
+                        <button class="btn btn-primary" onclick="window.location.href='cart.php?departure=${data.departure.name}&arrival=${data.arrival.name}'">Add to cart</button>
                     </div>
                 `);
 
@@ -273,6 +326,15 @@
 
     $('#toggleFont').on('click', function() {
         $('body').toggleClass('aurebesh');
+    });
+
+    // Swap planets button
+    $('#swapPlanets').on('click', function() {
+        var departure = $('#departure').val();
+        var arrival = $('#arrival').val();
+        
+        $('#departure').val(arrival);
+        $('#arrival').val(departure);
     });
 
     $('head').append('<style>.aurebesh { font-family: "Aurebesh", sans-serif; }</style>');

@@ -1,0 +1,15 @@
+{
+    "smtp": {
+        "host": "smtp.gmail.com",
+        "port": 587,
+        "encryption": "tls",
+        "auth": true,
+        "username": "yourmail@gmail.com",
+        "password": "password123"
+    },
+    "from": {
+        "email": "yourmail@gmail.com",
+        "name": "Travia Tour"
+    },
+    "debug": false
+} 

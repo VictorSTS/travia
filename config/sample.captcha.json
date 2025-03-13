@@ -1,0 +1,19 @@
+{
+    "simple_captcha": {
+        "enabled": true,
+        "min_number": 1,
+        "max_number": 10
+    },
+    "recaptcha": {
+        "enabled": true,
+        "site_key": {
+            "localhost": "6Lda1vMqAAAAAGzXAH178kwulD0wUHdZkg5eDDLE",
+            "univ-eiffel": "6Lda1vMqAAAAAGzXAH178kwulD0wUHdZkg5eDDLE"
+        },
+        "secret_key": {
+            "localhost": "YOUR_LOCALHOST_SECRET_KEY",
+            "univ-eiffel": "YOUR_UNIV_EIFFEL_SECRET_KEY"
+        },
+        "version": "v2"
+    }
+} 
