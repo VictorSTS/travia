@@ -58,19 +58,35 @@ try {
         $passwordHash = htmlspecialchars(strip_tags($data['password_hash']));
         $token = htmlspecialchars(strip_tags($data['token']));
         
-        // Check if the token is valid using the API_TOKEN from config
-        if ($token !== API_TOKEN) {
-            echo json_encode([
-                'connexion' => false,
-                'error' => 'Invalid API token'
-            ]);
-            exit;
-        }
-        
         try {
             // Create database connection directly like in getPlanets.php
             $pdo = new PDO('mysql:host=localhost;dbname=db', 'root', '');
             $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+            
+            // Check if the token is valid using either API_TOKEN or any token in the users table
+            $validToken = false;
+            
+            if ($token === API_TOKEN) {
+                $validToken = true;
+            } else {
+                // Check if the token exists in the users table
+                $tokenQuery = "SELECT id FROM users WHERE api_token = :token AND api_token_expiry > NOW()";
+                $tokenStmt = $pdo->prepare($tokenQuery);
+                $tokenStmt->bindParam(':token', $token);
+                $tokenStmt->execute();
+                
+                if ($tokenStmt->rowCount() > 0) {
+                    $validToken = true;
+                }
+            }
+            
+            if (!$validToken) {
+                echo json_encode([
+                    'connexion' => false,
+                    'error' => 'Invalid API token'
+                ]);
+                exit;
+            }
             
             // First, get the user by email only
             $query = "SELECT id, first_name, last_name, email, password, is_verified, created_at FROM users 
@@ -157,4 +173,4 @@ try {
         'error' => 'Server error: ' . $e->getMessage()
     ]);
 }
-?> 
+?>
