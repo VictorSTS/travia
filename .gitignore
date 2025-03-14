@@ -4,4 +4,5 @@ composer.lock
 composer.json
 config/mail.json
 config/captcha.json
+config/api_config.php
 logs/

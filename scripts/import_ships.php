@@ -1,21 +1,21 @@
 <?php
-// Connexion à la base de données
+// Database connection
 $pdo = new PDO('mysql:host=localhost;dbname=db', 'root', '');
 
 require_once('../class/ship.php');
 
-// Fonction pour lire le fichier JSON et insérer les données dans la base de données
+// Function to read the JSON file and insert data into the database
 function importShips($pdo) {
-    // Lire le fichier JSON
+    // Read the JSON file
     $jsonData = file_get_contents('../data/ships.json');
     $ships = json_decode($jsonData, true);
 
-    // Vérifier si les données ont été décodées correctement
+    // Check if data was decoded correctly
     if (json_last_error() !== JSON_ERROR_NONE) {
-        die('Erreur de décodage JSON : ' . json_last_error_msg());
+        die('JSON decoding error: ' . json_last_error_msg());
     }
 
-    // Préparer la requête d'insertion
+    // Prepare the insert query
     $query = $pdo->prepare("
         INSERT INTO ships (id, name, camp, speed_kmh, capacity)
         VALUES (:id, :name, :camp, :speed_kmh, :capacity)
@@ -26,10 +26,10 @@ function importShips($pdo) {
             capacity = VALUES(capacity)
     ");
 
-    // Tableau pour stocker les objets Ship
+    // Array to store Ship objects
     $shipObjects = [];
 
-    // Parcourir les données et les insérer dans la table
+    // Loop through the data and insert into the table
     foreach ($ships as $shipData) {
         $query->execute([
             ':id' => $shipData['id'],
@@ -39,7 +39,7 @@ function importShips($pdo) {
             ':capacity' => $shipData['capacity']
         ]);
 
-        // Créer un objet Ship pour chaque vaisseau et l'ajouter au tableau
+        // Create a Ship object for each ship and add it to the array
         $ship = new Ship(
             $shipData['id'],
             $shipData['name'],
@@ -50,15 +50,15 @@ function importShips($pdo) {
         $shipObjects[] = $ship;
     }
 
-    // Retourner le tableau d'objets Ship
+    // Return the array of Ship objects
     return $shipObjects;
 }
 
-// Importer les vaisseaux et obtenir les objets
+// Import ships and get objects
 $shipObjects = importShips($pdo);
 
-// Afficher les détails de chaque vaisseau
-echo "<h1>Vaisseaux importés :</h1>";
+// Display details of each ship
+echo "<h1>Imported Ships:</h1>";
 foreach ($shipObjects as $ship) {
     $ship->display();
 }

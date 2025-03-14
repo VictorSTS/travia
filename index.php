@@ -16,6 +16,14 @@ if ($isLoggedIn) {
     $homePlanet = isset($_SESSION['home_planet']) ? $_SESSION['home_planet'] : '';
     $workPlanet = isset($_SESSION['work_planet']) ? $_SESSION['work_planet'] : '';
 }
+
+// Calculate cart count
+$cartCount = 0;
+if (isset($_SESSION['cart'])) {
+    foreach ($_SESSION['cart'] as $item) {
+        $cartCount += $item['quantity'];
+    }
+}
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -25,6 +33,7 @@ if ($isLoggedIn) {
     <title>Travia Tour</title>
     <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
     <style>
         @font-face {
             font-family: Aurebesh;
@@ -94,7 +103,12 @@ if ($isLoggedIn) {
     <div class="collapse navbar-collapse" id="navbarNav">
         <ul class="navbar-nav ml-auto">
             <li class="nav-item">
-                <a class="nav-link" href="cart.php">Cart</a>
+                <a class="nav-link" href="cart.php">
+                    Cart
+                    <?php if ($cartCount > 0): ?>
+                    <span id="cartCount" class="badge badge-pill badge-primary ml-1"><?php echo $cartCount; ?></span>
+                    <?php endif; ?>
+                </a>
             </li>
             <?php if ($isLoggedIn): ?>
                 <li class="nav-item dropdown">
@@ -157,7 +171,7 @@ if ($isLoggedIn) {
     <div id="planetsContainer" class="row mt-4"></div>
 
 <div class="footer">
-    <p>&copy; 2024 Travia Tour. All rights reserved.</p>
+    <p>&copy; 2025 Travia Tour. All rights reserved.</p>
 </div>
 
 <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
@@ -285,33 +299,96 @@ if ($isLoggedIn) {
                 }
 
                 var distance = calculateDistance(data.departure.x, data.departure.y, data.arrival.x, data.arrival.y);
+                var price = Math.round(distance * 10); // Calculate price based on distance
 
                 $('#planetsContainer').empty();
 
-                var departureImageUrl = 'https://static.wikia.nocookie.net/starwars/images/placeholder.png';
-
+                // Create a better travel details container
                 $('#planetsContainer').append(`
-                    <div class="col-md-6 text-center p-3" style="background-color: #1e1e1e; border-radius: 8px;">
-                        <h5>Departure planet</h5>
-                        <img src="${departureImageUrl}" alt="${data.departure.name}" class="img-thumbnail mb-2" style="max-height: 150px;">
-                        <p><strong>${data.departure.name}</strong></p>
-                        <p>Coordinates: (${data.departure.x}, ${data.departure.y})</p>
+                    <div class="col-12 mb-4">
+                        <div class="card bg-dark text-white">
+                            <div class="card-header">
+                                <h4>Travel Details</h4>
+                            </div>
+                            <div class="card-body">
+                                <div class="row">
+                                    <div class="col-md-5 text-center">
+                                        <h5>Departure</h5>
+                                        <h3>${data.departure.name}</h3>
+                                        <p>Coordinates: (${data.departure.x}, ${data.departure.y})</p>
+                                        <p>Region: ${data.departure.region || 'Unknown'}</p>
+                                    </div>
+                                    <div class="col-md-2 text-center d-flex align-items-center justify-content-center">
+                                        <div>
+                                            <i class="fa fa-arrow-right" style="font-size: 2em;"></i>
+                                            <p class="mt-2">Distance: ${distance} light-years</p>
+                                            <p>Est. travel time: ${Math.ceil(distance/10)} days</p>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-5 text-center">
+                                        <h5>Arrival</h5>
+                                        <h3>${data.arrival.name}</h3>
+                                        <p>Coordinates: (${data.arrival.x}, ${data.arrival.y})</p>
+                                        <p>Region: ${data.arrival.region || 'Unknown'}</p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="card-footer">
+                                <div class="row">
+                                    <div class="col-md-4">
+                                        <h5>Price: ${price} credits per ticket</h5>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <div class="form-group">
+                                            <label for="ticketQuantity">Number of tickets:</label>
+                                            <input type="number" class="form-control" id="ticketQuantity" min="1" max="10" value="1">
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4 text-right">
+                                        <button class="btn btn-primary btn-lg" id="addToCartBtn">
+                                            Add to cart
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 `);
 
-
-                var arrivalImageUrl = 'https://static.wikia.nocookie.net/starwars/images/placeholder.png';
-                $('#planetsContainer').append(`
-                    <div class="col-md-6 text-center p-3" style="background-color: #2a2a2a; border-radius: 8px;">
-                        <h5>Arrival planet</h5>
-                        <img src="${arrivalImageUrl}" alt="${data.arrival.name}" class="img-thumbnail mb-2" style="max-height: 150px;">
-                        <p><strong>${data.arrival.name}</strong></p>
-                        <p>Coordinates: (${data.arrival.x}, ${data.arrival.y})</p>
-                        <p>Distance: ${distance}</p>
-                        <button class="btn btn-primary" onclick="window.location.href='cart.php?departure=${data.departure.name}&arrival=${data.arrival.name}'">Add to cart</button>
-                    </div>
-                `);
-
+                // Add to cart button event handler
+                $('#addToCartBtn').on('click', function() {
+                    const quantity = parseInt($('#ticketQuantity').val()) || 1;
+                    
+                    // Add ticket to cart via AJAX
+                    $.post('add_to_cart.php', {
+                        departure: data.departure.name,
+                        arrival: data.arrival.name,
+                        distance: distance,
+                        price: price,
+                        quantity: quantity
+                    }, function(response) {
+                        if (response.success) {
+                            // Show success message
+                            $('<div class="alert alert-success mt-3">')
+                                .text(`${quantity} ticket(s) added to your cart!`)
+                                .appendTo('#planetsContainer')
+                                .delay(3000)
+                                .fadeOut();
+                                
+                            // Update cart count in navbar if it exists
+                            if ($('#cartCount').length) {
+                                $('#cartCount').text(response.cartCount);
+                            } else {
+                                // Add cart count badge if it doesn't exist
+                                $('.nav-link[href="cart.php"]').append(
+                                    `<span id="cartCount" class="badge badge-pill badge-primary ml-1">${response.cartCount}</span>`
+                                );
+                            }
+                        } else {
+                            alert('Error adding to cart: ' + response.error);
+                        }
+                    }, 'json');
+                });
             } else {
                 alert('No route found.');
             }

@@ -105,7 +105,7 @@ class User
         if (!$this->validatePasswordComplexity($password)) {
             return [
                 'success' => false,
-                'message' => 'Password must contain at least 8 characters, including at least one digit and one special character.'
+                'message' => 'Password must contain at least 12 characters, including at least one digit and one special character.'
             ];
         }
         
@@ -121,8 +121,8 @@ class User
      */
     private function validatePasswordComplexity($password): bool
     {
-        // Check length (at least 8 characters)
-        if (strlen($password) < 8) {
+        // Check length (at least 12 characters)
+        if (strlen($password) < 12) {
             return false;
         }
         

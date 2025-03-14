@@ -24,4 +24,3 @@ echo "<br>";
 echo "<a href='forgot_password.php'>Go to Password Recovery Page</a>";
 echo "<br>";
 echo "<a href='register.php'>Go to Registration Page</a>";
-?> 

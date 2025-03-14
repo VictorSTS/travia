@@ -47,6 +47,14 @@ try {
             FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
         )
     ");
+
+    // API changes
+    $pdo->exec("
+        ALTER TABLE users 
+        ADD COLUMN api_token VARCHAR(255) NULL,
+        ADD COLUMN api_token_expiry DATETIME NULL,
+        ADD INDEX idx_api_token (api_token);
+    ");
     
     echo "Tables created successfully!";
 } catch (PDOException $e) {

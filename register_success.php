@@ -93,7 +93,7 @@ $email = $_SESSION['registration_email'];
     </div>
 
     <div class="footer">
-        <p>&copy; 2024 Travia Tour. All rights reserved.</p>
+        <p>&copy; 2025 Travia Tour. All rights reserved.</p>
     </div>
 
     <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>

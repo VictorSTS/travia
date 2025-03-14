@@ -27,18 +27,46 @@ try {
     }
 
     if ($departurePlanet && $arrivalPlanet) {
+        // Calculate coordinates
+        $departureX = ($departurePlanet['x'] + $departurePlanet['sub_grid_x']) * 6;
+        $departureY = ($departurePlanet['y'] + $departurePlanet['sub_grid_y']) * 6;
+        $arrivalX = ($arrivalPlanet['x'] + $arrivalPlanet['sub_grid_x']) * 6;
+        $arrivalY = ($arrivalPlanet['y'] + $arrivalPlanet['sub_grid_y']) * 6;
+        
+        // Calculate distance
+        $distance = sqrt(pow($arrivalX - $departureX, 2) + pow($arrivalY - $departureY, 2));
+        
+        // Format planet data
         $result = [
             'success' => true,
             'departure' => [
                 'name' => $departurePlanet['name'],
-                'x' => ($departurePlanet['x'] + $departurePlanet['sub_grid_x']) * 6,
-                'y' => ($departurePlanet['y'] + $departurePlanet['sub_grid_y']) * 6
+                'x' => $departureX,
+                'y' => $departureY,
+                'region' => $departurePlanet['region'],
+                'sector' => $departurePlanet['sector'],
+                'suns' => $departurePlanet['suns'],
+                'moons' => $departurePlanet['moons'],
+                'diameter' => $departurePlanet['diameter'],
+                'gravity' => $departurePlanet['gravity'],
+                'length_day' => $departurePlanet['length_day'],
+                'length_year' => $departurePlanet['length_year']
             ],
             'arrival' => [
                 'name' => $arrivalPlanet['name'],
-                'x' => ($arrivalPlanet['x'] + $arrivalPlanet['sub_grid_x']) * 6,
-                'y' => ($arrivalPlanet['y'] + $arrivalPlanet['sub_grid_y']) * 6
-            ]
+                'x' => $arrivalX,
+                'y' => $arrivalY,
+                'region' => $arrivalPlanet['region'],
+                'sector' => $arrivalPlanet['sector'],
+                'suns' => $arrivalPlanet['suns'],
+                'moons' => $arrivalPlanet['moons'],
+                'diameter' => $arrivalPlanet['diameter'],
+                'gravity' => $arrivalPlanet['gravity'],
+                'length_day' => $arrivalPlanet['length_day'],
+                'length_year' => $arrivalPlanet['length_year']
+            ],
+            'distance' => $distance,
+            'travel_time' => ceil($distance / 10) // Estimate travel time in days
         ];
     } else {
         $result = ['success' => false];

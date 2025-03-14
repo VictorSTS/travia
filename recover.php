@@ -284,7 +284,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                                     <?php if (isset($errors['password'])): ?>
                                         <div class="invalid-feedback"><?php echo $errors['password']; ?></div>
                                     <?php endif; ?>
-                                    <small class="form-text text-muted">Password must contain at least 8 characters.</small>
+                                    <small class="form-text text-muted">Password must contain at least 12 characters.</small>
                                 </div>
                                 <div class="form-group">
                                     <label for="confirm_password">Confirm password</label>
@@ -349,8 +349,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             if (password.value.trim() === '') {
                 showError(password, 'Password is required.');
                 event.preventDefault();
-            } else if (password.value.length < 8) {
-                showError(password, 'Password must contain at least 8 characters.');
+            } else if (password.value.length < 12) {
+                showError(password, 'Password must contain at least 12 characters.');
                 event.preventDefault();
             } else {
                 clearError(password);

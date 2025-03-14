@@ -2,7 +2,7 @@
 
 require_once '../class/trip.php';
 
-// Connexion à la base de données
+// Database connection
 $pdo = new PDO('mysql:host=localhost;dbname=db', 'root', '');
 
 // Load JSON data

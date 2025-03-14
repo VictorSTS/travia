@@ -1,26 +1,26 @@
 <?php
-// Connexion à la base de données
+// Database connection
 $pdo = new PDO('mysql:host=localhost;dbname=db', 'root', '');
 
-// Inclure la classe Planet
+// Include the Planet class
 require_once('../class/planet.php');
 
-// Fonction pour importer les données des planètes
+// Function to import planet data
 function importPlanets($pdo)
 {
-    // Lire le fichier JSON
+    // Read the JSON file
     $jsonData = file_get_contents('../data/planets_details.json');
     $planets = json_decode($jsonData, true);
 
-    // Vérifier si les données ont été décodées correctement
+    // Check if data was decoded correctly
     if (json_last_error() !== JSON_ERROR_NONE) {
-        die('Erreur de décodage JSON : ' . json_last_error_msg());
+        die('JSON decoding error: ' . json_last_error_msg());
     }
 
-    // Supprimer les anciennes données de la table planets
+    // Delete old data from the planets table
     $pdo->exec('DELETE FROM planets');
 
-    // Préparer la requête d'insertion
+    // Prepare the insert query
     $query = $pdo->prepare('
         INSERT INTO planets (id, name, image, coord, x, y, sub_grid_coord, sub_grid_x, sub_grid_y, region, sector, suns, moons, position, distance, length_day, length_year, diameter, gravity)
         VALUES (:id, :name, :image, :coord, :x, :y, :sub_grid_coord, :sub_grid_x, :sub_grid_y, :region, :sector, :suns, :moons, :position, :distance, :length_day, :length_year, :diameter, :gravity)
@@ -45,10 +45,10 @@ function importPlanets($pdo)
             gravity = VALUES(gravity)
     ');
 
-    // Tableau pour stocker les objets Planet
+    // Array to store Planet objects
     $planetObjects = [];
 
-    // Parcourir les données et les insérer dans la table
+    // Loop through the data and insert into the table
     foreach ($planets as $planetData) {
         $query->execute([
             ':id' => $planetData['Id'],
@@ -72,7 +72,7 @@ function importPlanets($pdo)
             ':gravity' => $planetData['Gravity']
         ]);
 
-        // Créer un objet Planet pour chaque planète et l'ajouter au tableau
+        // Create a Planet object for each planet and add it to the array
         $planet = new Planet(
             $planetData['Id'],
             $planetData['Name'],
@@ -97,20 +97,20 @@ function importPlanets($pdo)
         $planetObjects[] = $planet;
     }
 
-    // Retourner le tableau d'objets Planet
+    // Return the array of Planet objects
     return $planetObjects;
 }
 
-// Importer les planètes et obtenir les objets
+// Import planets and get objects
 $planetObjects = importPlanets($pdo);
 
-// Afficher les détails de chaque planète
+// Display details of each planet
 $i = 0;
-echo "<h1>Planètes importées :</h1>";
+echo "<h1>Imported Planets:</h1>";
 foreach ($planetObjects as $planet) {
 /*    $i++;
     if($i > 20){
-        break; // On affiche seulement 20 planètes
+        break; // Only display 20 planets
     }*/
     $planet->display();
 }

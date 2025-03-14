@@ -84,8 +84,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         
         if (empty($formData['password'])) {
             $errors['password'] = 'Password is required.';
-        } elseif (strlen($formData['password']) < 8) {
-            $errors['password'] = 'Password must contain at least 8 characters.';
+        } elseif (strlen($formData['password']) < 12) {
+            $errors['password'] = 'Password must contain at least 12 characters.';
         } elseif (!preg_match('/[0-9]/', $formData['password'])) {
             $errors['password'] = 'Password must contain at least one digit.';
         } elseif (!preg_match('/[^a-zA-Z0-9]/', $formData['password'])) {
@@ -355,7 +355,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     </div>
 
     <div class="footer">
-        <p>&copy; 2024 Travia Tour. All rights reserved.</p>
+        <p>&copy; 2025 Travia Tour. All rights reserved.</p>
     </div>
 
     <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
@@ -406,8 +406,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             if (password.value === '') {
                 showError(password, 'Password is required.');
                 isValid = false;
-            } else if (password.value.length < 8) {
-                showError(password, 'Password must contain at least 8 characters.');
+            } else if (password.value.length < 12) {
+                showError(password, 'Password must contain at least 12 characters.');
                 isValid = false;
             } else if (!/[0-9]/.test(password.value)) {
                 showError(password, 'Password must contain at least one digit.');

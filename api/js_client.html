@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Travia Tour API - JavaScript Client</title>
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            padding: 20px;
+            background-color: #f8f9fa;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        .card {
+            margin-bottom: 20px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        pre {
+            background-color: #f5f5f5;
+            padding: 15px;
+            border-radius: 5px;
+            overflow-x: auto;
+        }
+        .response-container {
+            margin-top: 20px;
+            display: none;
+        }
+        .code-block {
+            background-color: #f5f5f5;
+            padding: 15px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1 class="my-4">Travia Tour API - JavaScript Client</h1>
+        
+        <div class="card">
+            <div class="card-header bg-primary text-white">
+                <h5 class="mb-0">User Verification API Test</h5>
+            </div>
+            <div class="card-body">
+                <form id="apiTestForm">
+                    <div class="form-group">
+                        <label for="email">Email:</label>
+                        <input type="text" class="form-control" id="email" name="email" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="password">Password:</label>
+                        <input type="password" class="form-control" id="password" name="password" required>
+                        <small class="form-text text-muted">For bcrypt verification, the raw password will be sent to the API.</small>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="token">API Token:</label>
+                        <input type="text" class="form-control" id="token" name="token" value="travia_api_secret_token" required>
+                        <small class="form-text text-muted">This should match the token in config/api_config.php</small>
+                    </div>
+                    
+                    <button type="submit" class="btn btn-primary">Test API</button>
+                </form>
+                
+                <div class="response-container mt-4" id="responseContainer">
+                    <h5>API Response:</h5>
+                    <pre id="responseOutput"></pre>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card">
+            <div class="card-header bg-info text-white">
+                <h5 class="mb-0">JavaScript Implementation</h5>
+            </div>
+            <div class="card-body">
+                <p>Here's the JavaScript code used to make the API request:</p>
+                
+                <div class="code-block">
+<pre><code>// Function to call the API
+async function callVerifyUserApi(email, password, token) {
+    
+    // Prepare the request data
+    const data = {
+        email: email,
+        password_hash: password,
+        token: token
+    };
+    
+    try {
+        // Make the API request
+        const response = await fetch('verify_user.php', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Accept': 'application/json'
+            },
+            body: JSON.stringify(data)
+        });
+
+        // Parse the JSON response
+        const responseData = await response.json();
+        
+        return responseData;
+    } catch (error) {
+        console.error('API Error:', error);
+        throw new Error(`API request failed: ${error.message}`);
+    }
+}</code></pre>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        // Test API connection on page load
+        window.addEventListener('DOMContentLoaded', async function() {
+            try {
+                const response = await fetch('test.php');
+                const data = await response.json();
+                console.log('API Connection Test:', data);
+                
+                if (data.status === 'success') {
+                    // Add a success message to the page
+                    const alertDiv = document.createElement('div');
+                    alertDiv.className = 'alert alert-success';
+                    alertDiv.innerHTML = `<strong>API Connected!</strong> Version: ${data.api_version}, PHP: ${data.php_version}`;
+                    document.querySelector('.container').insertBefore(alertDiv, document.querySelector('.card'));
+                }
+            } catch (error) {
+                console.error('API Connection Test Failed:', error);
+                
+                // Add an error message to the page
+                const alertDiv = document.createElement('div');
+                alertDiv.className = 'alert alert-danger';
+                alertDiv.innerHTML = `<strong>API Connection Failed!</strong> ${error.message}`;
+                document.querySelector('.container').insertBefore(alertDiv, document.querySelector('.card'));
+            }
+        });
+        
+        // Function to call the API
+        async function callVerifyUserApi(email, password, token) {
+            // For bcrypt passwords, we send the raw password
+            // The server will use password_verify() to compare with the stored hash
+            
+            // Prepare the request data
+            const data = {
+                email: email,
+                password_hash: password, // Send raw password for bcrypt verification
+                token: token
+            };
+            
+            try {
+                // Make the API request
+                const response = await fetch('verify_user.php', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/json'
+                    },
+                    body: JSON.stringify(data)
+                });
+                
+                // Check if the response is JSON
+                const contentType = response.headers.get('content-type');
+                if (!contentType || !contentType.includes('application/json')) {
+                    // If not JSON, get the text and throw an error
+                    const text = await response.text();
+                    throw new Error(`Server returned non-JSON response: ${text}`);
+                }
+                
+                // Parse the JSON response
+                const responseData = await response.json();
+                
+                return responseData;
+            } catch (error) {
+                console.error('API Error:', error);
+                throw new Error(`API request failed: ${error.message}`);
+            }
+        }
+        
+        // Handle form submission
+        document.getElementById('apiTestForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+            const token = document.getElementById('token').value;
+            
+            // Show loading state
+            document.getElementById('responseContainer').style.display = 'block';
+            document.getElementById('responseOutput').textContent = 'Loading...';
+            
+            try {
+                // Call the API
+                const responseData = await callVerifyUserApi(email, password, token);
+                
+                // Display the response
+                document.getElementById('responseOutput').textContent = JSON.stringify(responseData, null, 4);
+            } catch (error) {
+                document.getElementById('responseOutput').textContent = `Error: ${error.message}`;
+                console.error(error);
+            }
+        });
+    </script>
+</body>
+</html> 
