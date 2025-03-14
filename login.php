@@ -56,7 +56,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             if (empty($email)) {
                 $errors['email'] = 'Email address is required.';
             } elseif (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
-                $errors['email'] = 'Email address is not valid.';
+                $errors['email'] = 'Please enter a valid email format.';
             } else {
                 try {
                     // Connect to database
@@ -91,7 +91,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         $errors['email'] = $result['message'];
                     }
                 } catch (PDOException $e) {
-                    $errors['general'] = 'Database error: ' . $e->getMessage();
+                    $errors['general'] = 'An error occurred. Please try again later.';
                 }
             }
         }
@@ -106,9 +106,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         if (empty($code)) {
             $errors['code'] = 'Verification code is required.';
         } elseif (!preg_match('/^\d{6}$/', $code)) {
-            $errors['code'] = 'Verification code must contain 6 digits.';
+            $errors['code'] = 'Invalid verification code format.';
         } elseif (empty($userId)) {
-            $errors['general'] = 'Session expired. Please try again.';
+            $errors['general'] = 'Your session has expired. Please try again.';
             $step = 1;
         } else {
             try {
@@ -138,10 +138,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     header('Location: index.php');
                     exit;
                 } else {
-                    $errors['code'] = $result['message'];
+                    $errors['code'] = 'Authentication failed. Please check your verification code and try again.';
                 }
             } catch (PDOException $e) {
-                $errors['general'] = 'Database error: ' . $e->getMessage();
+                $errors['general'] = 'An error occurred. Please try again later.';
             }
         }
     }
@@ -225,9 +225,6 @@ if ($step == 2 && isset($_SESSION['login_email'])) {
                 <li class="nav-item">
                     <a class="nav-link" href="index.php">Home</a>
                 </li>
-                <li class="nav-item active">
-                    <a class="nav-link" href="login.php">Login</a>
-                </li>
                 <li class="nav-item">
                     <a class="nav-link" href="register.php">Register</a>
                 </li>
@@ -298,7 +295,9 @@ if ($step == 2 && isset($_SESSION['login_email'])) {
 
     <div class="footer">
         <p>&copy; 2025 Travia Tour. All rights reserved.</p>
+        <a href="https://github.com/victorsts/travia" target="_blank" class="text-dark" title="View on GitHub"></a>
     </div>
+
 
     <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
@@ -310,7 +309,7 @@ if ($step == 2 && isset($_SESSION['login_email'])) {
                 showError(email, 'Email address is required.');
                 event.preventDefault();
             } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.value)) {
-                showError(email, 'Email address is not valid.');
+                showError(email, 'Please enter a valid email format.');
                 event.preventDefault();
             } else {
                 clearError(email);
@@ -324,7 +323,7 @@ if ($step == 2 && isset($_SESSION['login_email'])) {
                 showError(code, 'Verification code is required.');
                 event.preventDefault();
             } else if (!/^\d{6}$/.test(code.value)) {
-                showError(code, 'Verification code must contain 6 digits.');
+                showError(code, 'Invalid verification code format.');
                 event.preventDefault();
             } else {
                 clearError(code);
@@ -365,4 +364,5 @@ if ($step == 2 && isset($_SESSION['login_email'])) {
         $('head').append('<style>.aurebesh { font-family: "Aurebesh", sans-serif; }</style>');
     </script>
 </body>
+</html> 
 </html> 

@@ -134,8 +134,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         if (!empty($password) && !empty($confirmPassword) && !empty($userId)) {
             if ($password === $confirmPassword) {
                 // Validate password complexity
-                if (strlen($password) < 8) {
-                    $message = 'Password must contain at least 8 characters.';
+                if (strlen($password) < 12) {
+                    $message = 'Password must contain at least 12 characters.';
                     $messageType = 'danger';
                 } elseif (!preg_match('/[0-9]/', $password)) {
                     $message = 'Password must contain at least one digit.';

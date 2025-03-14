@@ -53,8 +53,7 @@
                     
                     <div class="form-group">
                         <label for="password">Password:</label>
-                        <input type="password" class="form-control" id="password" name="password" required>
-                        <small class="form-text text-muted">For bcrypt verification, the raw password will be sent to the API.</small>
+                        <input type="password" class="form-control" id="password" name="password" required>    
                     </div>
                     
                     <div class="form-group">
@@ -144,9 +143,6 @@ async function callVerifyUserApi(email, password, token) {
         
         // Function to call the API
         async function callVerifyUserApi(email, password, token) {
-            // For bcrypt passwords, we send the raw password
-            // The server will use password_verify() to compare with the stored hash
-            
             // Prepare the request data
             const data = {
                 email: email,

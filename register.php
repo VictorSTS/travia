@@ -79,17 +79,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         if (empty($formData['email'])) {
             $errors['email'] = 'Email address is required.';
         } elseif (!filter_var($formData['email'], FILTER_VALIDATE_EMAIL)) {
-            $errors['email'] = 'Email address is not valid.';
+            $errors['email'] = 'Please enter a valid email format.';
         }
         
         if (empty($formData['password'])) {
             $errors['password'] = 'Password is required.';
         } elseif (strlen($formData['password']) < 12) {
-            $errors['password'] = 'Password must contain at least 12 characters.';
+            $errors['password'] = 'Password does not meet security requirements.';
         } elseif (!preg_match('/[0-9]/', $formData['password'])) {
-            $errors['password'] = 'Password must contain at least one digit.';
+            $errors['password'] = 'Password does not meet security requirements.';
         } elseif (!preg_match('/[^a-zA-Z0-9]/', $formData['password'])) {
-            $errors['password'] = 'Password must contain at least one special character.';
+            $errors['password'] = 'Password does not meet security requirements.';
         }
         
         if ($formData['password'] !== $formData['confirmPassword']) {
@@ -120,22 +120,22 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 // Set password with validation
                 $passwordResult = $user->setPassword($formData['password']);
                 if (!$passwordResult['success']) {
-                    $errors['password'] = $passwordResult['message'];
-                    throw new Exception($passwordResult['message']);
+                    $errors['password'] = 'Password does not meet security requirements.';
+                    throw new Exception('Password validation failed.');
                 }
                 
                 // Set home planet with validation
                 $homePlanetResult = $user->setHomePlanet($formData['homePlanet']);
                 if (!$homePlanetResult['success']) {
-                    $errors['homePlanet'] = $homePlanetResult['message'];
-                    throw new Exception($homePlanetResult['message']);
+                    $errors['homePlanet'] = 'Invalid planet selection.';
+                    throw new Exception('Home planet validation failed.');
                 }
                 
                 // Set work planet with validation
                 $workPlanetResult = $user->setWorkPlanet($formData['workPlanet']);
                 if (!$workPlanetResult['success']) {
-                    $errors['workPlanet'] = $workPlanetResult['message'];
-                    throw new Exception($workPlanetResult['message']);
+                    $errors['workPlanet'] = 'Invalid planet selection.';
+                    throw new Exception('Work planet validation failed.');
                 }
                 
                 // Register user
@@ -156,15 +156,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         header('Location: register_success.php');
                         exit;
                     } else {
-                        $errors['email'] = $emailResult['message'];
+                        $errors['email'] = 'Registration could not be completed. Please try again later.';
                     }
                 } else {
-                    $errors['general'] = $result['message'];
+                    $errors['general'] = 'Registration failed. Please try again later.';
                 }
             } catch (PDOException $e) {
-                $errors['general'] = 'Database error: ' . $e->getMessage();
+                $errors['general'] = 'An error occurred. Please try again later.';
             } catch (Exception $e) {
-                $errors['general'] = $e->getMessage();
+                $errors['general'] = 'Registration could not be completed. Please try again later.';
             }
         }
     }
@@ -395,7 +395,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 showError(email, 'Email address is required.');
                 isValid = false;
             } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.value)) {
-                showError(email, 'Email address is not valid.');
+                showError(email, 'Please enter a valid email format.');
                 isValid = false;
             } else {
                 clearError(email);
@@ -407,13 +407,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 showError(password, 'Password is required.');
                 isValid = false;
             } else if (password.value.length < 12) {
-                showError(password, 'Password must contain at least 12 characters.');
+                showError(password, 'Password does not meet security requirements.');
                 isValid = false;
             } else if (!/[0-9]/.test(password.value)) {
-                showError(password, 'Password must contain at least one digit.');
+                showError(password, 'Password does not meet security requirements.');
                 isValid = false;
             } else if (!/[^a-zA-Z0-9]/.test(password.value)) {
-                showError(password, 'Password must contain at least one special character.');
+                showError(password, 'Password does not meet security requirements.');
                 isValid = false;
             } else {
                 clearError(password);

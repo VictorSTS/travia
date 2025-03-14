@@ -85,12 +85,7 @@ require_once '../config/api_config.php';
                 <h5 class="mt-4">Test Clients</h5>
                 <div>
                     <a href="api/js_client.html" class="btn btn-outline-info client-link">JavaScript Client</a>
-                </div>
-                
-                <h5 class="mt-4">Debug Tools</h5>
-                <div>
                     <a href="api/test.php" class="btn btn-outline-success client-link">API Status Test</a>
-                    <a href="api/debug.php" class="btn btn-outline-warning client-link">System Information</a>
                 </div>
                 
                 <h5 class="mt-4">Authentication</h5>

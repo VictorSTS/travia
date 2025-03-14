@@ -15,6 +15,9 @@ if ($isLoggedIn) {
     $userName = isset($_SESSION['user_name']) ? $_SESSION['user_name'] : '';
     $homePlanet = isset($_SESSION['home_planet']) ? $_SESSION['home_planet'] : '';
     $workPlanet = isset($_SESSION['work_planet']) ? $_SESSION['work_planet'] : '';
+} else {
+    header('Location: login.php');
+    exit();
 }
 
 // Calculate cart count
@@ -171,7 +174,7 @@ if (isset($_SESSION['cart'])) {
     <div id="planetsContainer" class="row mt-4"></div>
 
 <div class="footer">
-    <p>&copy; 2025 Travia Tour. All rights reserved.</p>
+    <p>&copy; 2025 Travia Tour. All rights reserved. <a href="https://github.com/victorsts/travia" target="_blank" class="text-light" title="View on GitHub">View on GitHub</a></p>
 </div>
 
 <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
