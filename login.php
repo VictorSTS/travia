@@ -294,8 +294,7 @@ if ($step == 2 && isset($_SESSION['login_email'])) {
     </div>
 
     <div class="footer">
-        <p>&copy; 2025 Travia Tour. All rights reserved.</p>
-        <a href="https://github.com/victorsts/travia" target="_blank" class="text-dark" title="View on GitHub"></a>
+        <p>&copy; 2025 Travia Tour. All rights reserved. <a href="https://github.com/victorsts/travia" target="_blank" class="text-light" title="View on GitHub">View on GitHub</a></p>
     </div>
 
 

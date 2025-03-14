@@ -355,7 +355,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     </div>
 
     <div class="footer">
-        <p>&copy; 2025 Travia Tour. All rights reserved.</p>
+        <p>&copy; 2025 Travia Tour. All rights reserved. <a href="https://github.com/victorsts/travia" target="_blank" class="text-light" title="View on GitHub">View on GitHub</a></p>
     </div>
 
     <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
